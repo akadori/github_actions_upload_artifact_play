@@ -28,3 +28,28 @@ jobs:
                 name: my-artifact
                 path: path/to/artifact
             - run: cat path/to/artifact/world.txt
+
+    set_last_commit_to_env:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - run: echo ${{ github.sha }} > path/to/artifact/last_commit.txt
+            - uses: actions/download-artifact@v3
+              with:
+                name: latest_commit
+                path: path/to/latest_commit
+            - run: |
+                if [ -f path/to/latest_commit/last_commit.txt ]; then
+                    echo "last commit: $(cat path/to/latest_commit/last_commit.txt)"
+                else
+                    echo "no last commit"
+                fi
+            - name: foo
+              run: |
+                echo "last commit: ${{ github.sha }}" > path/to/artifact/last_commit.txt
+            - name: Set last commmit
+              uses: actions/upload-artifact@v3
+              with:
+                name: latest_commit
+                path: path/to/artifact/last_commit.txt
+
